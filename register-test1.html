@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Register for the 19th SCCI International STEAM Summit &amp; Awards 2026</title>
+<link rel="icon" type="image/png" href="https://ridello.github.io/Schools-Computer-C-lub-Initiative/images/logo.png" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+/* EDIT EVENT_CONFIG BELOW ONLY — everything on the page reads from it. */
+</style>
+<script>
+  const EVENT_CONFIG = {
+    slug: "scci-connection-test-2026",   // must match the events.slug row in Supabase — confirm/create it
+    name: "19th SCCI International STEAM Summit & Awards 2026",
+    dateLabel: "Saturday, 14 November 2026",
+    timeVenue: "10:00 AM WAT · UNILAG AI Unipod, University of Lagos",
+    theme: "AI, STEAM & Innovation for Impact",
+    tracks: ["SCCI Robotics League Competition", "SCCI AI Innovation Challenge"],
+    dpText: "I will be participating in SCCI Summit for 2026", // fixed per spec — do not change
+    participantTypes: [
+      { value: "student", label: "Student" },
+      { value: "teacher", label: "Teacher / Coach" },
+      { value: "school", label: "School representative" },
+      { value: "mentor", label: "Mentor / Judge" },
+      { value: "general", label: "General attendee" },
+    ],
+    categories: ["SCCI Robotics League Competition", "SCCI AI Innovation Challenge"],
+    paymentRequired: false, // flip true once a fee/provider is confirmed and verified server-side
+  };
+  const SUPABASE_URL = "https://qnasjflifrdllwicrfdg.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_VixtRQE67H9okiiBWwCsNg_FEQzuPAv";
+;
+
+</script>
+<style>
+:root {
+  --bg: #050505; --surface: #0e0e10; --surface-2: #16161a;
+  --text: #ffffff; --text-soft: #b8b8b8; --text-dim: #7a7a7f;
+  --blue: #3b82f6; --violet: #7c3aed; --red: #c81e2b; --green: #22c55e; --amber: #f0b84d;
+  --border: rgba(255,255,255,.1);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--bg); }
+body {
+  margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+h1,h2,h3 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
+p { margin: 0; }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+a { color: inherit; }
+
+/* restrained Apple-style ambient background: soft breathing gradients, no clutter */
+.bg-glow { position: fixed; inset: 0; z-index: -2; pointer-events: none; background: var(--bg); overflow: hidden; }
+.bg-glow::before, .bg-glow::after {
+  content: ''; position: absolute; width: 60vw; height: 60vw; border-radius: 50%; filter: blur(90px);
+  animation: drift 22s ease-in-out infinite alternate;
+}
+.bg-glow::before { top: -15%; left: -10%; background: radial-gradient(circle, rgba(59,130,246,.22), transparent 70%); }
+.bg-glow::after { bottom: -20%; right: -10%; background: radial-gradient(circle, rgba(124,58,237,.2), transparent 70%); animation-duration: 26s; animation-delay: -6s; }
+@keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(4%, 3%) scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .bg-glow::before, .bg-glow::after { animation: none; } }
+#networkCanvas { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; opacity: .85; }
+.spark { position: fixed; z-index: -1; pointer-events: none; font-size: 44px; opacity: .38; filter: saturate(.3) brightness(1.8) drop-shadow(0 0 10px rgba(147,197,253,.65)); animation: floaty linear infinite, wobble 5s ease-in-out infinite alternate; }
+@keyframes wobble { from { translate: -16px 0; } to { translate: 16px 0; } }
+@keyframes floaty { 0% { transform: translateY(0) rotate(0deg) scale(.9); } 50% { transform: translateY(-60vh) rotate(-12deg) scale(1.1); } 100% { transform: translateY(-125vh) rotate(25deg) scale(.9); } }
+@media (prefers-reduced-motion: reduce) { .spark { display:none; } }
+
+/* IMPORTANT: html already paints the page colour, so body must be transparent —
+   an opaque body background paints ABOVE the negative z-index layers below and
+   hides the whole animated background. */
+body { background: transparent; }
+
+/* faint rotating circuit grid + a slow light sweep, for texture and motion */
+.bg-grid { position: fixed; inset: -50%; z-index: -2; pointer-events: none;
+  background-image: linear-gradient(rgba(99,160,255,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(99,160,255,.11) 1px, transparent 1px);
+  background-size: 64px 64px; -webkit-mask-image: radial-gradient(ellipse 36% 32% at 50% 50%, #000 15%, transparent 80%); mask-image: radial-gradient(ellipse 36% 32% at 50% 50%, #000 15%, transparent 80%);
+  animation: gridDrift 40s linear infinite, gridSpin 150s linear infinite; }
+@keyframes gridDrift { from { background-position: 0 0, 0 0; } to { background-position: 64px 128px, 64px 128px; } }
+@keyframes gridSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.bg-sweep { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.bg-sweep::before { content:''; position:absolute; top:-20%; left:50%; width:140%; height:160%; transform: translateX(-50%) rotate(8deg);
+  background: linear-gradient(100deg, transparent 40%, rgba(124,58,237,.14) 48%, rgba(59,130,246,.24) 50%, rgba(124,58,237,.14) 52%, transparent 60%);
+  animation: sweep 9s ease-in-out infinite; }
+@keyframes sweep { 0% { transform: translateX(-100%) rotate(8deg); } 100% { transform: translateX(0%) rotate(8deg); } }
+@media (prefers-reduced-motion: reduce) { .bg-grid, .bg-sweep::before { animation: none; } }
+
+/* ---------------- shell / nav ---------------- */
+.topbar { position: sticky; top:0; z-index: 10; display:flex; align-items:center; justify-content:space-between;
+  padding: 18px 24px; backdrop-filter: blur(14px); background: rgba(5,5,5,.6); border-bottom: 1px solid var(--border); }
+.logo { display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; color:#fff; text-decoration:none; }
+.logo img { width: 26px; height: 26px; }
+.back-link { font-size: 13px; color: var(--text-soft); text-decoration: none; transition: color .2s; }
+.back-link:hover { color: #fff; }
+
+.wrap { max-width: 680px; margin: 0 auto; padding: 56px 20px 100px; }
+
+/* gentle entrance choreography — Apple keynote style stagger */
+@keyframes riseIn { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform: translateY(0); } }
+.rise { animation: riseIn .7s cubic-bezier(.16,1,.3,1) both; }
+.rise-1 { animation-delay: .02s; } .rise-2 { animation-delay: .1s; } .rise-3 { animation-delay: .18s; } .rise-4 { animation-delay: .26s; }
+
+.hero { text-align: center; display:flex; flex-direction:column; align-items:center; }
+.date-tag { display:inline-flex; align-items:stretch; border:1px solid var(--border); border-radius: 14px; overflow:hidden; background: rgba(255,255,255,.03); }
+.date-tag .m { padding: 7px 14px; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#93c5fd; background: rgba(59,130,246,.12); display:flex; align-items:center; }
+.date-tag .d { padding: 7px 16px; font-size:13px; font-weight:600; color:#fff; display:flex; align-items:center; gap:7px; }
+.date-tag .d::before { content:''; width:5px; height:5px; border-radius:50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+h1.title { margin-top: 20px; font-size: 34px; line-height: 1.14; letter-spacing: -.015em; max-width: 560px;
+  background: linear-gradient(135deg, #fff 35%, #b8c7ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+@media (min-width:640px){ h1.title{ font-size: 42px; } }
+.sub { margin-top: 14px; color: var(--text-soft); font-size: 15px; line-height: 1.6; max-width: 480px; }
+.theme-line { margin-top: 12px; font-size: 13px; color: #93c5fd; font-weight: 600; position:relative; display:inline-block; padding-bottom:8px; }
+.theme-line::after { content:''; position:absolute; left:50%; bottom:0; width:36px; height:2px; background: linear-gradient(90deg, var(--blue), var(--violet)); transform: translateX(-50%); border-radius:2px; }
+.track-chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; justify-content:center; }
+.chip { font-size:12px; padding:6px 12px; border-radius:999px; background: rgba(255,255,255,.05); border:1px solid var(--border); color: var(--text-soft); }
+
+/* click-to-choose upload tiles */
+.drop { border: 1.5px dashed var(--border); border-radius: 14px; padding: 18px; text-align:center; cursor:pointer;
+  font-size:13px; color: var(--text-soft); background: var(--surface-2); transition: all .2s; }
+.drop:hover { border-color: rgba(59,130,246,.5); background: rgba(59,130,246,.05); }
+.drop.has-file { border-color: var(--blue); border-style: solid; color: var(--text); background: rgba(59,130,246,.06); }
+.drop .drop-icon { font-size: 20px; margin-bottom:4px; display:block; }
+
+/* ---------------- glass card ---------------- */
+.card { margin-top: 32px; background: rgba(14,14,16,.72); border: 1px solid var(--border); border-radius: 26px;
+  padding: 26px; backdrop-filter: blur(22px) saturate(140%); box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  transition: box-shadow .3s; }
+@media (min-width:640px){ .card{ padding: 38px; } }
+
+.tabs { display:flex; gap:4px; background: rgba(255,255,255,.05); border-radius: 12px; padding: 4px; margin-bottom: 26px; }
+.tab-btn { flex:1; border:none; background:transparent; color: var(--text-soft); padding: 10px 6px; border-radius: 9px;
+  font-size:12.5px; font-weight:600; cursor:pointer; transition: all .25s cubic-bezier(.16,1,.3,1); }
+.tab-btn.active { background: rgba(255,255,255,.1); color:#fff; }
+.tab-btn:hover:not(.active) { color: #fff; }
+
+.field { margin-bottom: 18px; }
+.field label { display:block; font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.field input, .field select, .field textarea {
+  width:100%; background: var(--surface-2); border:1px solid var(--border); color:#fff; border-radius: 12px;
+  padding: 13px 14px; font-size:15px; font-family: inherit; transition: border-color .2s, box-shadow .2s; }
+.field input:focus, .field select:focus, .field textarea:focus { outline:none; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(59,130,246,.15); }
+.field input[type=file] { padding: 10px 12px; cursor:pointer; }
+.field-hint { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+.grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width:520px){ .grid-2{ grid-template-columns: 1fr; } }
+.hidden { display:none !important; }
+
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; border:none; border-radius: 999px;
+  padding: 15px 20px; font-size: 15px; font-weight:600; cursor:pointer; transition: all .25s cubic-bezier(.16,1,.3,1); }
+.btn-solid { background: linear-gradient(135deg, var(--blue), var(--violet)); color:#fff; box-shadow: 0 8px 24px rgba(59,130,246,.3); }
+.btn-solid:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(59,130,246,.45); }
+.btn-solid:active { transform: translateY(0); }
+.btn-solid:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.btn-ghost { background: rgba(255,255,255,.06); color:#fff; border: 1px solid var(--border); }
+.btn-ghost:hover { background: rgba(255,255,255,.11); transform: translateY(-1px); }
+.btn-sm { padding: 10px 16px; font-size: 13px; width: auto; }
+
+.notice { border-radius: 14px; padding: 13px 16px; font-size: 13px; margin-bottom: 20px; border:1px solid; line-height:1.5; animation: riseIn .4s ease both; }
+.notice-info { background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.3); color:#bfdbfe; }
+.notice-error { background: rgba(200,30,43,.1); border-color: rgba(200,30,43,.35); color:#fecaca; }
+.notice-success { background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.35); color:#bbf7d0; }
+
+.success-box { text-align:center; padding: 10px 0 4px; animation: riseIn .5s cubic-bezier(.16,1,.3,1) both; }
+.success-box .check { width:56px; height:56px; border-radius:50%; background: rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.4);
+  display:flex; align-items:center; justify-content:center; margin: 0 auto 18px; font-size: 24px; animation: pop .5s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes pop { from { transform: scale(.4); opacity:0; } to { transform: scale(1); opacity:1; } }
+.ref-code { font-family:'IBM Plex Mono',monospace; font-size: 22px; letter-spacing:.04em; background: var(--surface-2);
+  border:1px solid var(--border); border-radius:12px; padding: 14px; margin: 18px 0; color:#93c5fd; }
+
+.qr-wrap { background:#fff; padding:14px; border-radius:18px; display:inline-block; margin: 18px 0 8px; box-shadow: 0 20px 50px rgba(0,0,0,.4); animation: riseIn .5s cubic-bezier(.16,1,.3,1) both; }
+.dp-preview { max-width: 280px; width:100%; border-radius: 18px; margin: 16px auto; display:block; border:1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,.4); animation: riseIn .4s ease both; }
+.btn-row { display:flex; gap:10px; justify-content:center; margin-top: 14px; flex-wrap:wrap; }
+
+.status-result { margin-top: 18px; }
+.status-row { display:flex; justify-content:space-between; gap:12px; padding: 10px 0; border-bottom:1px solid var(--border); font-size:14px; }
+.status-row:last-child{ border-bottom:none; }
+.status-row span:first-child{ color: var(--text-dim); }
+.badge { display:inline-flex; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:4px 10px; border-radius:999px; }
+.badge-amber{ background: rgba(240,184,77,.15); color:#f0b84d; }
+.badge-green{ background: rgba(34,197,94,.15); color:#4ade80; }
+.badge-red{ background: rgba(200,30,43,.15); color:#f87171; }
+.badge-blue{ background: rgba(59,130,246,.15); color:#93c5fd; }
+.badge-dim{ background: rgba(255,255,255,.08); color: var(--text-dim); }
+
+.teacher-banner { background: rgba(34,197,94,.08); border:1px solid rgba(34,197,94,.3); border-radius:14px; padding:14px 16px; font-size:13px; margin-bottom:20px; color:#bbf7d0; }
+.subtabs { display:flex; gap:8px; margin-bottom:18px; }
+.subtab { flex:1; text-align:center; padding:9px; border-radius:10px; border:1px solid var(--border); background: rgba(255,255,255,.04); color:var(--text-soft); font-size:12.5px; font-weight:600; cursor:pointer; transition: all .2s; }
+.subtab.active { background: linear-gradient(135deg, var(--blue), var(--violet)); color:#fff; border-color:transparent; }
+.small-link { font-size:12px; color:#93c5fd; cursor:pointer; text-decoration:underline; }
+table.mini-table { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:10px; }
+table.mini-table th, table.mini-table td { text-align:left; padding:8px 9px; border-bottom:1px solid var(--border); }
+table.mini-table th { color:var(--text-dim); font-size:10.5px; text-transform:uppercase; }
+.row-ok { color:#4ade80; } .row-fail { color:#f87171; }
+.spinner { width:15px; height:15px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation: spin .7s linear infinite; display:inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.foot-note { text-align:center; margin-top: 24px; font-size: 12px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="SCCI.html"><img src="https://ridello.github.io/Schools-Computer-C-lub-Initiative/images/logo.png" alt="">SCCI</a>
+  <a class="back-link" href="SCCI.html">← Back to SCCI</a>
+</header>
+
+<div class="bg-glow" aria-hidden="true"></div>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-sweep" aria-hidden="true"></div>
+<canvas id="networkCanvas" aria-hidden="true"></canvas>
+
+<div class="wrap">
+  <div class="hero">
+  <span class="date-tag rise rise-1"><span class="m">Nov 2026</span><span class="d">Registration open</span></span>
+  <h1 class="title rise rise-2" id="eventTitle">Register</h1>
+  <p class="sub rise rise-2" id="eventSub"></p>
+  <p class="theme-line rise rise-3" id="eventTheme"></p>
+  <div class="track-chips rise rise-3" id="trackChips"></div>
+  </div>
+
+  <div class="card rise rise-4">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="register">Register</button>
+      <button class="tab-btn" data-tab="teacher">Teacher / School</button>
+      <button class="tab-btn" data-tab="status">Check status</button>
+    </div>
+
+    <!-- ============ INDIVIDUAL REGISTER ============ -->
+    <div id="registerPane">
+      <div id="registerNotice"></div>
+      <form id="regForm">
+        <div class="field"><label>Full name</label><input required name="full_name" autocomplete="name"></div>
+        <div class="grid-2">
+          <div class="field"><label>Email</label><input required type="email" name="email" autocomplete="email"></div>
+          <div class="field"><label>Phone</label><input required name="phone" autocomplete="tel"></div>
+        </div>
+        <div class="field"><label>I am registering as</label><select required name="participant_type" id="participantType"></select></div>
+        <div class="field hidden" id="schoolField"><label>School / organization</label><input name="school_name"></div>
+        <div class="field hidden" id="categoryField"><label>Category</label><select name="competition_category" id="categorySelect"></select></div>
+        <div class="field hidden" id="teamField"><label>Team name <span style="text-transform:none;letter-spacing:0;">(optional)</span></label><input name="team_name"></div>
+        <div class="field">
+          <label>Photo <span style="text-transform:none;letter-spacing:0;">(for your event badge / DP)</span></label>
+          <div class="drop" id="dropPhoto"><span class="drop-icon">📷</span>Click to choose a photo · JPG/PNG/WEBP, up to 5MB</div>
+          <input type="file" name="photo" id="regPhoto" accept="image/jpeg,image/png,image/webp" style="display:none">
+        </div>
+        <div class="field">
+          <label>Project <span style="text-transform:none;letter-spacing:0;">(optional, upload your project file, deck or a short write up)</span></label>
+          <div class="drop" id="dropProject"><span class="drop-icon">📁</span>Click to choose a file · PDF/DOC/PPT/ZIP/image, up to 10MB</div>
+          <input type="file" name="project" id="regProject" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.png,.jpg,.jpeg" style="display:none">
+          <div class="field-hint">Files stay private. Only assigned SCCI organizers can access them.</div>
+        </div>
+        <div class="field hidden" id="paymentProofField">
+          <label>Proof of payment <span style="text-transform:none;letter-spacing:0;">(receipt or screenshot)</span></label>
+          <div class="drop" id="dropPayment"><span class="drop-icon">🧾</span>Click to choose a receipt · JPG/PNG/PDF, up to 5MB</div>
+          <input type="file" name="payment_proof" id="regPaymentProof" accept="image/jpeg,image/png,application/pdf" style="display:none">
+        </div>
+        <button class="btn btn-solid" type="submit" id="regSubmitBtn">Submit registration</button>
+      </form>
+    </div>
+
+    <!-- ============ TEACHER / SCHOOL BULK ============ -->
+    <div id="teacherPane" class="hidden">
+      <div id="teacherSelfStep">
+        <div class="notice notice-info">Register yourself first as the teacher/coach for your school. You'll then be able to add your students one at a time or upload a CSV for the whole class.</div>
+        <div id="teacherSelfNotice"></div>
+        <form id="teacherSelfForm">
+          <div class="field"><label>Your full name</label><input required name="full_name"></div>
+          <div class="grid-2">
+            <div class="field"><label>Your email</label><input required type="email" name="email"></div>
+            <div class="field"><label>Your phone</label><input required name="phone"></div>
+          </div>
+          <div class="field"><label>School name</label><input required name="school_name"></div>
+          <button class="btn btn-solid" type="submit" id="teacherSelfBtn">Register as teacher</button>
+        </form>
+        <p class="field-hint" style="margin-top:14px;">Already registered? <span class="small-link" id="teacherHaveRef">I already have a reference code</span></p>
+      </div>
+
+      <div id="teacherStudentsStep" class="hidden">
+        <div class="teacher-banner">Signed in as teacher · reference <b class="mono" id="teacherRefDisplay"></b></div>
+
+        <div class="subtabs">
+          <div class="subtab active" data-subtab="one">Add one student</div>
+          <div class="subtab" data-subtab="bulk">Bulk upload (CSV)</div>
+        </div>
+
+        <div id="subpanel-one">
+          <div id="studentNotice"></div>
+          <form id="studentForm">
+            <div class="field"><label>Student full name</label><input required name="full_name"></div>
+            <div class="grid-2">
+              <div class="field"><label>Email</label><input required type="email" name="email"></div>
+              <div class="field"><label>Phone</label><input required name="phone"></div>
+            </div>
+            <div class="field"><label>Participant type</label><select name="participant_type" id="studentType"></select></div>
+            <div class="field"><label>Category</label><select name="competition_category" id="studentCategory"><option value="">None</option></select></div>
+            <button class="btn btn-solid" type="submit" id="studentSubmitBtn">Add student</button>
+          </form>
+        </div>
+
+        <div id="subpanel-bulk" class="hidden">
+          <p class="field-hint">CSV columns: <code>full_name,email,phone,participant_type,category</code></p>
+          <div class="btn-row" style="justify-content:flex-start; margin-top:10px;">
+            <button class="btn btn-ghost btn-sm" type="button" id="downloadTemplate">Download CSV template</button>
+          </div>
+          <div class="field" style="margin-top:14px;"><input type="file" id="csvFile" accept=".csv"></div>
+          <div id="csvPreviewWrap" class="hidden">
+            <div class="notice notice-info" id="csvSummary"></div>
+            <div style="max-height:240px; overflow:auto;"><table class="mini-table" id="csvPreviewTable"></table></div>
+            <button class="btn btn-solid" type="button" id="csvSubmitBtn" style="margin-top:14px;">Submit all valid rows</button>
+          </div>
+          <div id="csvResults"></div>
+        </div>
+
+        <p class="field-hint" style="margin-top:20px;">Students registered so far: <b id="studentCount">0</b> · <span class="small-link" id="refreshStudents">refresh</span></p>
+        <div id="studentList"></div>
+      </div>
+    </div>
+
+    <!-- ============ STATUS ============ -->
+    <div id="statusPane" class="hidden">
+      <div id="statusNotice"></div>
+      <form id="statusForm">
+        <div class="field"><label>Reference code</label><input required name="reference_code" placeholder="SCCI-2026-00001" class="mono"></div>
+        <div class="field"><label>Email used to register</label><input required type="email" name="email"></div>
+        <button class="btn btn-solid" type="submit">Check status</button>
+      </form>
+      <div id="statusResult" class="status-result"></div>
+    </div>
+  </div>
+
+  <p class="foot-note">Your application goes straight into the SCCI Event Admin Dashboard, not email, not a spreadsheet.</p>
+</div>
+
+<canvas id="dpCanvas" width="1080" height="1350" style="display:none"></canvas>
+
+<script>
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+document.getElementById("eventTitle").textContent = EVENT_CONFIG.name;
+document.getElementById("eventSub").textContent = `${EVENT_CONFIG.dateLabel} · ${EVENT_CONFIG.timeVenue}. Fill in your details below, you will get a reference code and QR to track and confirm your registration.`;
+document.getElementById("eventTheme").textContent = "Theme: " + EVENT_CONFIG.theme;
+document.getElementById("trackChips").innerHTML = EVENT_CONFIG.tracks.map(t => `<span class="chip">${t}</span>`).join('');
+document.title = "Register for " + EVENT_CONFIG.name;
+
+function fillSelect(sel, opts, withBlank) {
+  sel.innerHTML = (withBlank ? '<option value="">None</option>' : '') +
+    opts.map(o => typeof o === 'string' ? `<option value="${o}">${o}</option>` : `<option value="${o.value}">${o.label}</option>`).join('');
+}
+fillSelect(document.getElementById("participantType"), EVENT_CONFIG.participantTypes.filter(t => t.value !== 'teacher'));
+fillSelect(document.getElementById("categorySelect"), EVENT_CONFIG.categories, true);
+fillSelect(document.getElementById("studentType"), EVENT_CONFIG.participantTypes.filter(t => t.value !== 'teacher'));
+fillSelect(document.getElementById("studentCategory"), EVENT_CONFIG.categories, true);
+
+const typeSel = document.getElementById("participantType");
+function updateConditionalFields(){
+  const v = typeSel.value;
+  document.getElementById("schoolField").classList.toggle("hidden", !(v==="student"||v==="teacher"||v==="school"));
+  document.getElementById("categoryField").classList.toggle("hidden", !(v==="student"||v==="school") || EVENT_CONFIG.categories.length===0);
+  document.getElementById("teamField").classList.toggle("hidden", v!=="student");
+}
+typeSel.addEventListener("change", updateConditionalFields);
+updateConditionalFields();
+
+document.getElementById('paymentProofField').classList.toggle('hidden', !EVENT_CONFIG.paymentRequired);
+
+/* click-to-choose drop zones */
+function wireDrop(dropId, inputId, maxMB){
+  const drop = document.getElementById(dropId), input = document.getElementById(inputId);
+  const label = drop.innerHTML;
+  drop.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => {
+    const f = input.files[0];
+    if (!f) { drop.innerHTML = label; drop.classList.remove('has-file'); return; }
+    if (f.size > maxMB*1024*1024) { alert(`File too large. Max ${maxMB}MB.`); input.value=''; return; }
+    drop.textContent = f.name;
+    drop.classList.add('has-file');
+  });
+}
+wireDrop('dropPhoto', 'regPhoto', 5);
+wireDrop('dropProject', 'regProject', 10);
+wireDrop('dropPayment', 'regPaymentProof', 5);
+
+document.querySelectorAll(".tabs > .tab-btn").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    document.querySelectorAll(".tabs > .tab-btn").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.getElementById("registerPane").classList.toggle("hidden", b.dataset.tab!=="register");
+    document.getElementById("teacherPane").classList.toggle("hidden", b.dataset.tab!=="teacher");
+    document.getElementById("statusPane").classList.toggle("hidden", b.dataset.tab!=="status");
+  });
+});
+document.querySelectorAll(".subtabs .subtab").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    document.querySelectorAll(".subtabs .subtab").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.getElementById("subpanel-one").classList.toggle("hidden", b.dataset.subtab!=="one");
+    document.getElementById("subpanel-bulk").classList.toggle("hidden", b.dataset.subtab!=="bulk");
+  });
+});
+
+function escapeHtml(value){
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  })[ch]);
+}
+function notice(el, type, msg){ el.innerHTML = `<div class="notice notice-${type}">${msg}</div>`; }
+async function uploadFile(file, prefix){
+  if(!file || !file.size) return null;
+  if (file.size > 5*1024*1024) throw new Error(`${file.name} is larger than 5MB.`);
+  const path = `${EVENT_CONFIG.slug}/${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,8)}-${file.name}`;
+  const { error } = await sb.storage.from("event-uploads").upload(path, file);
+  if(error) throw new Error("Could not upload " + file.name + ": " + error.message);
+  return path;
+}
+function badgeClassFor(status){
+  return status==="approved"||status==="finalist"||status==="winner"||status==="checked_in" ? "badge-green"
+    : status==="rejected" ? "badge-red" : status==="needs_information" ? "badge-amber" : "badge-blue";
+}
+function paymentBadgeClass(ps){
+  return ps === "paid" ? "badge-green" : ps === "pending" ? "badge-amber" : ps === "failed" ? "badge-red" : "badge-dim";
+}
+
+async function ensureQRCodeLibrary(){
+  if (window.QRious) return;
+  const sources = [
+    "https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js",
+    "https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"
+  ];
+  for (const src of sources){
+    try {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = () => { script.remove(); reject(new Error("Could not load " + src)); };
+        document.head.appendChild(script);
+      });
+      if (window.QRious) return;
+    } catch (err) {
+      console.warn("QR library source failed:", src, err);
+    }
+  }
+  throw new Error("The QR-code library could not load from either source.");
+}
+
+async function renderQR(canvas, token){
+  if (!canvas) throw new Error("QR canvas was not found.");
+  if (!token) throw new Error("No QR token or registration ID was returned.");
+  await ensureQRCodeLibrary();
+  new window.QRious({
+    element: canvas,
+    value: String(token),
+    size: 210,
+    padding: 4,
+    foreground: '#050505',
+    background: '#ffffff'
+  });
+}
+
+async function generateDP(photoFile, fullName){
+  const canvas = document.getElementById('dpCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const grad = ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0, '#0b0b10'); grad.addColorStop(1, '#171029');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,W,H);
+  const glow = ctx.createRadialGradient(W*0.78,H*0.1,0,W*0.78,H*0.1,W*0.75);
+  glow.addColorStop(0, 'rgba(124,58,237,.38)'); glow.addColorStop(1, 'rgba(124,58,237,0)');
+  ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
+  const glow2 = ctx.createRadialGradient(W*0.15,H*0.95,0,W*0.15,H*0.95,W*0.6);
+  glow2.addColorStop(0, 'rgba(59,130,246,.28)'); glow2.addColorStop(1, 'rgba(59,130,246,0)');
+  ctx.fillStyle = glow2; ctx.fillRect(0,0,W,H);
+
+  if (photoFile) {
+    const img = await new Promise((res, rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=URL.createObjectURL(photoFile); });
+    const size = 520, cx = W/2, cy = 420;
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx,cy,size/2,0,Math.PI*2); ctx.closePath(); ctx.clip();
+    const scale = Math.max(size/img.width, size/img.height);
+    const iw = img.width*scale, ih = img.height*scale;
+    ctx.drawImage(img, cx-iw/2, cy-ih/2, iw, ih);
+    ctx.restore();
+    ctx.lineWidth = 8; ctx.strokeStyle = '#3b82f6';
+    ctx.beginPath(); ctx.arc(cx,cy,size/2,0,Math.PI*2); ctx.stroke();
+  }
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#9ad1ff';
+  ctx.font = '600 24px "IBM Plex Mono", monospace';
+  ctx.fillText('19TH SCCI STEAM SUMMIT & AWARDS 2026', W/2, 740);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '600 54px "Space Grotesk", sans-serif';
+  wrapText(ctx, EVENT_CONFIG.dpText, W/2, 850, W-160, 64);
+
+  if (fullName) {
+    ctx.font = '500 32px Inter, sans-serif';
+    ctx.fillStyle = '#9cc2ff';
+    ctx.fillText(fullName, W/2, 1140);
+  }
+  ctx.font = '400 22px Inter, sans-serif';
+  ctx.fillStyle = '#7a7a7f';
+  ctx.fillText('AI · STEAM · INNOVATION · IMPACT · The Future is now!', W/2, 1280);
+
+  return canvas.toDataURL('image/png');
+}
+function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+  const words = text.split(' '); let line='', lines=[];
+  for (const w of words){ const t=line+w+' '; if (ctx.measureText(t).width>maxWidth && line){ lines.push(line); line=w+' '; } else line=t; }
+  lines.push(line);
+  const startY = y - (lines.length-1)*lineHeight/2;
+  lines.forEach((l,i)=>ctx.fillText(l.trim(), x, startY+i*lineHeight));
+}
+
+function renderSuccessExtras(container, reg, photoFile){
+  // Status lookup may return a limited row without an internal UUID.
+  // Use a safe local DOM ID rather than assuming reg.id always exists.
+  const rawId = reg?.id || reg?.reference_code || reg?.qr_token || `fallback-${Date.now()}`;
+  const id = 'x' + String(rawId).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 24);
+  const qrToken = reg?.qr_token || reg?.id || null;
+
+  container.insertAdjacentHTML('beforeend', `
+    <div class="qr-wrap" id="qrWrap_${id}"><canvas id="qr_${id}" width="210" height="210" aria-label="Registration QR code"></canvas></div>
+    <p class="field-hint" id="qrHint_${id}">Preparing your check-in QR code…</p>
+    <img class="dp-preview hidden" id="dp_${id}" />
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-sm" id="dpBtn_${id}">Generate my DP graphic</button>
+      <a class="btn btn-ghost btn-sm hidden" id="dpDl_${id}" download="scci-summit-2026-dp.png">Download DP</a>
+    </div>`);
+
+  const canvas = document.getElementById(`qr_${id}`);
+  const qrHint = document.getElementById(`qrHint_${id}`);
+  if (!qrToken) {
+    if (canvas) canvas.classList.add('hidden');
+    if (qrHint) qrHint.textContent =
+      'Your registration was found, but this lookup did not return a QR token. Keep your reference code for check-in.';
+  } else {
+    renderQR(canvas, qrToken).then(() => {
+      if (qrHint) qrHint.textContent = 'Show this QR code at check-in.';
+    }).catch(err => {
+      console.error('Could not render registration QR code:', err);
+      if (canvas) canvas.classList.add('hidden');
+      if (qrHint) qrHint.textContent =
+        'The QR code could not be generated. Keep your reference code for check-in.';
+    });
+  }
+
+  document.getElementById(`dpBtn_${id}`).addEventListener('click', async ()=>{
+    try {
+      const dataUrl = await generateDP(photoFile, reg?.full_name || '');
+      const img = document.getElementById(`dp_${id}`);
+      img.src = dataUrl;
+      img.classList.remove('hidden');
+      const dl = document.getElementById(`dpDl_${id}`);
+      dl.href = dataUrl;
+      dl.classList.remove('hidden');
+    } catch (err) {
+      console.error('Could not generate DP graphic:', err);
+      if (qrHint) qrHint.textContent = 'Could not generate the DP graphic. Please try another photo.';
+    }
+  });
+}
+
+document.getElementById("regForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const form = e.target;
+  const btn = document.getElementById("regSubmitBtn");
+  const noticeEl = document.getElementById("registerNotice");
+  noticeEl.innerHTML = "";
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  try{
+    const fd = new FormData(form);
+    const photoFile = fd.get("photo");
+    const photoPath = await uploadFile(photoFile, "photo");
+    const projectPath = await uploadFile(fd.get("project"), "project");
+    const paymentProofPath = await uploadFile(fd.get("payment_proof"), "payment-proof");
+    const docPaths = [projectPath, paymentProofPath].filter(Boolean);
+
+    const { data, error } = await sb.rpc("submit_event_registration", {
+      p_event_slug: EVENT_CONFIG.slug,
+      p_full_name: fd.get("full_name"), p_email: fd.get("email"), p_phone: fd.get("phone"),
+      p_participant_type: fd.get("participant_type"),
+      p_school_name: fd.get("school_name") || null,
+      p_competition_category: fd.get("competition_category") || null,
+      p_team_name: fd.get("team_name") || null,
+      p_details: {}, p_photo_path: photoPath, p_document_paths: docPaths,
+    });
+    if(error) throw new Error(error.message);
+    const row = Array.isArray(data) ? data[0] : data;
+
+    form.classList.add("hidden");
+    noticeEl.innerHTML = `
+      <div class="success-box">
+        <div class="check">✅</div>
+        <h3>You're registered</h3>
+        <p style="color:var(--text-soft); margin-top:8px; font-size:14px;">Save this reference code. You will need it with your email to check your status.</p>
+        <div class="ref-code">${row.reference_code}</div>
+      </div>`;
+    renderSuccessExtras(noticeEl.querySelector('.success-box'), row, photoFile && photoFile.size ? photoFile : null);
+  } catch(err){
+    notice(noticeEl, "error", err.message || "Something went wrong. Please try again.");
+  } finally {
+    btn.disabled = false; btn.textContent = "Submit registration";
+  }
+});
+
+let TEACHER_SESSION = JSON.parse(sessionStorage.getItem('scci_teacher') || 'null');
+function enterTeacherMode(ref, email){
+  TEACHER_SESSION = { ref, email };
+  sessionStorage.setItem('scci_teacher', JSON.stringify(TEACHER_SESSION));
+  document.getElementById('teacherSelfStep').classList.add('hidden');
+  document.getElementById('teacherStudentsStep').classList.remove('hidden');
+  document.getElementById('teacherRefDisplay').textContent = ref;
+  refreshStudentList();
+}
+if (TEACHER_SESSION) enterTeacherMode(TEACHER_SESSION.ref, TEACHER_SESSION.email);
+
+document.getElementById('teacherHaveRef').addEventListener('click', ()=>{
+  const ref = prompt('Your reference code (e.g. SCCI-2026-00001):');
+  const email = prompt('The email you registered with:');
+  if (ref && email) enterTeacherMode(ref.trim(), email.trim());
+});
+
+document.getElementById('teacherSelfForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const btn = document.getElementById('teacherSelfBtn');
+  const noticeEl = document.getElementById('teacherSelfNotice');
+  noticeEl.innerHTML = ''; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  try{
+    const { data, error } = await sb.rpc("submit_event_registration", {
+      p_event_slug: EVENT_CONFIG.slug,
+      p_full_name: fd.get("full_name"), p_email: fd.get("email"), p_phone: fd.get("phone"),
+      p_participant_type: "teacher", p_school_name: fd.get("school_name"),
+      p_competition_category: null, p_team_name: null, p_details: {},
+      p_photo_path: null, p_document_paths: [],
+    });
+    if(error) throw new Error(error.message);
+    const row = Array.isArray(data) ? data[0] : data;
+    notice(noticeEl, 'success', `Registered! Your reference code is <b>${row.reference_code}</b>. Save it.`);
+    enterTeacherMode(row.reference_code, row.email);
+  } catch(err){
+    notice(noticeEl, 'error', err.message || 'Something went wrong.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Register as teacher';
+  }
+});
+
+document.getElementById('studentForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const btn = document.getElementById('studentSubmitBtn');
+  const noticeEl = document.getElementById('studentNotice');
+  noticeEl.innerHTML = ''; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  try{
+    const { data, error } = await sb.rpc('teacher_add_student', {
+      p_teacher_reference_code: TEACHER_SESSION.ref, p_teacher_email: TEACHER_SESSION.email,
+      p_event_slug: EVENT_CONFIG.slug,
+      p_full_name: fd.get("full_name"), p_email: fd.get("email"), p_phone: fd.get("phone"),
+      p_participant_type: fd.get("participant_type"), p_competition_category: fd.get("competition_category") || null,
+    });
+    if(error) throw new Error(error.message);
+    const row = Array.isArray(data) ? data[0] : data;
+    notice(noticeEl, 'success', `Added ${row.full_name}, reference <b>${row.reference_code}</b>`);
+    e.target.reset();
+    refreshStudentList();
+  } catch(err){
+    notice(noticeEl, 'error', err.message || 'Could not add student.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Add student';
+  }
+});
+
+async function refreshStudentList(){
+  if (!TEACHER_SESSION) return;
+  const { data, error } = await sb.rpc('teacher_list_my_students', { p_teacher_reference_code: TEACHER_SESSION.ref, p_teacher_email: TEACHER_SESSION.email });
+  if (error) { console.warn(error); return; }
+  document.getElementById('studentCount').textContent = (data||[]).length;
+  const el = document.getElementById('studentList');
+  if (!data || !data.length) { el.innerHTML=''; return; }
+  el.innerHTML = '<table class="mini-table"><thead><tr><th>Name</th><th>Ref</th><th>Status</th></tr></thead><tbody>' +
+    data.map(r=>`<tr><td>${r.full_name}</td><td class="mono">${r.reference_code}</td><td>${r.status}</td></tr>`).join('') + '</tbody></table>';
+}
+document.getElementById('refreshStudents').addEventListener('click', refreshStudentList);
+
+document.getElementById('downloadTemplate').addEventListener('click', ()=>{
+  const csv = 'full_name,email,phone,participant_type,category\nAda Lovelace,ada@example.com,08012345678,student,SCCI Robotics League Competition\n';
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'scci-bulk-template.csv'; a.click();
+});
+function parseCSV(text){
+  const lines = text.trim().split(/\r?\n/);
+  const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
+  return lines.slice(1).filter(l=>l.trim()).map(line=>{
+    const cells = line.split(','); const row = {};
+    headers.forEach((h,i)=>row[h]=(cells[i]||'').trim());
+    return row;
+  });
+}
+let CSV_ROWS = [], CSV_BATCH_ID = null;
+document.getElementById('csvFile').addEventListener('change', ()=>{
+  const f = document.getElementById('csvFile').files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    CSV_ROWS = parseCSV(reader.result).map((r,i)=>{
+      const errs = [];
+      if (!r.full_name) errs.push('missing name');
+      if (!r.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(r.email)) errs.push('bad email');
+      if (!['student','mentor','general','school'].includes(r.participant_type)) errs.push('bad participant_type');
+      return { ...r, _row:i, _valid: errs.length===0, _errors: errs, _rowKey: `${f.name}-${i}-${r.email}` };
+    });
+    CSV_BATCH_ID = crypto.randomUUID();
+    const valid = CSV_ROWS.filter(r=>r._valid).length;
+    document.getElementById('csvSummary').textContent = `${CSV_ROWS.length} rows found: ${valid} valid, ${CSV_ROWS.length-valid} need fixing.`;
+    document.getElementById('csvPreviewTable').innerHTML = '<thead><tr><th>#</th><th>Name</th><th>Email</th><th>Type</th><th>Status</th></tr></thead><tbody>' +
+      CSV_ROWS.map(r=>`<tr class="${r._valid?'row-ok':'row-fail'}"><td>${r._row+1}</td><td>${r.full_name}</td><td>${r.email}</td><td>${r.participant_type}</td><td>${r._valid?'Ready':r._errors.join(', ')}</td></tr>`).join('') + '</tbody>';
+    document.getElementById('csvPreviewWrap').classList.remove('hidden');
+  };
+  reader.readAsText(f);
+});
+document.getElementById('csvSubmitBtn').addEventListener('click', async ()=>{
+  const btn = document.getElementById('csvSubmitBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  const resultsEl = document.getElementById('csvResults');
+  resultsEl.innerHTML = '<p class="field-hint">Submitting…</p>';
+  const results = [];
+  for (const row of CSV_ROWS){
+    if (!row._valid) { results.push({...row, outcome:'skipped', reason: row._errors.join(', ')}); continue; }
+    try{
+      const { data, error } = await sb.rpc('teacher_add_student', {
+        p_teacher_reference_code: TEACHER_SESSION.ref, p_teacher_email: TEACHER_SESSION.email,
+        p_event_slug: EVENT_CONFIG.slug,
+        p_full_name: row.full_name, p_email: row.email, p_phone: row.phone || '',
+        p_participant_type: row.participant_type, p_competition_category: row.category || null,
+        p_client_row_key: row._rowKey, p_batch_id: CSV_BATCH_ID,
+      });
+      if (error) throw error;
+      const reg = Array.isArray(data) ? data[0] : data;
+      results.push({...row, outcome:'success', reference_code: reg.reference_code});
+    } catch(err){
+      results.push({...row, outcome:'failed', reason: err.message});
+    }
+  }
+  const okCount = results.filter(r=>r.outcome==='success').length;
+  resultsEl.innerHTML = `<div class="notice notice-success">${okCount} of ${results.length} registered.</div>` +
+    '<table class="mini-table"><thead><tr><th>Name</th><th>Result</th><th>Reference / reason</th></tr></thead><tbody>' +
+    results.map(r=>`<tr class="${r.outcome==='success'?'row-ok':'row-fail'}"><td>${r.full_name||''}</td><td>${r.outcome}</td><td class="mono">${r.reference_code||r.reason||''}</td></tr>`).join('') + '</tbody></table>';
+  btn.disabled = false; btn.textContent = 'Submit all valid rows';
+  refreshStudentList();
+});
+
+document.getElementById("statusForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const resultEl = document.getElementById("statusResult");
+  const noticeEl = document.getElementById("statusNotice");
+  noticeEl.innerHTML = ""; resultEl.innerHTML = "";
+  try{
+    const { data, error } = await sb.rpc("get_my_event_registration", {
+      p_reference_code: fd.get("reference_code").trim(), p_email: fd.get("email"),
+    });
+    if(error) throw new Error(error.message);
+    const r = Array.isArray(data) ? data[0] : data;
+    if(!r){ notice(noticeEl, "error", "No application found with that reference code and email."); return; }
+    const status = String(r.status || 'submitted').replaceAll('_', ' ');
+    const payment = String(r.payment_status || 'not_required').replaceAll('_', ' ');
+    const submitted = r.submitted_at
+      ? new Date(r.submitted_at).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})
+      : '—';
+    resultEl.innerHTML = `
+      <div class="status-row"><span>Applicant</span><span>${escapeHtml(r.full_name || '—')}</span></div>
+      <div class="status-row"><span>Event</span><span>${escapeHtml(r.event_name || EVENT_CONFIG.name)}</span></div>
+      <div class="status-row"><span>Type</span><span>${escapeHtml(r.participant_type || '—')}${r.competition_category ? ' · ' + escapeHtml(r.competition_category) : ''}</span></div>
+      <div class="status-row"><span>Registration</span><span class="badge ${badgeClassFor(r.status)}">${escapeHtml(status)}</span></div>
+      <div class="status-row"><span>Payment</span><span class="badge ${paymentBadgeClass(r.payment_status || 'not_required')}">${escapeHtml(payment)}</span></div>
+      <div class="status-row"><span>Checked in</span><span class="badge ${r.checked_in_at ? 'badge-green' : 'badge-dim'}">${r.checked_in_at ? 'Yes' : 'Not yet'}</span></div>
+      <div class="status-row"><span>Submitted</span><span>${escapeHtml(submitted)}</span></div>`;
+    renderSuccessExtras(resultEl, r, null);
+  } catch(err){
+    notice(noticeEl, "error", err.message || "Could not look that up right now.");
+  }
+});
+
+/* =============================================================================
+   LIVE BACKGROUND — a quiet circuit of nodes drifting and linking, standing
+   in for the AI / robotics theme without shouting over the page content.
+   ============================================================================= */
+(function network(){
+  const canvas = document.getElementById('networkCanvas');
+  const ctx = canvas.getContext('2d');
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let w, h, nodes;
+  function setup(){
+    w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight;
+    const count = w < 640 ? 44 : 78;
+    nodes = Array.from({length: count}, () => ({
+      x: Math.random()*w, y: Math.random()*h,
+      vx: (Math.random()-.5)*0.22, vy: (Math.random()-.5)*0.22,
+      r: 1.5 + Math.random()*2.6, ph: Math.random()*Math.PI*2,
+      hue: Math.random() < 0.45 ? '167,139,250' : '99,160,255',
+    }));
+  }
+  window.addEventListener('resize', setup); setup();
+  function frame(){
+    ctx.clearRect(0,0,w,h);
+    for (const n of nodes){
+      if (!still){ n.x += n.vx; n.y += n.vy; }
+      if (n.x < 0 || n.x > w) n.vx *= -1;
+      if (n.y < 0 || n.y > h) n.vy *= -1;
+    }
+    for (let i=0;i<nodes.length;i++){
+      for (let j=i+1;j<nodes.length;j++){
+        const a = nodes[i], b = nodes[j];
+        const d = Math.hypot(a.x-b.x, a.y-b.y);
+        if (d < 195){
+          ctx.strokeStyle = `rgba(${a.hue},${(1 - d/195) * 0.42})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+    }
+    for (const n of nodes){
+      const tw = still ? 1 : 0.8 + 0.2*Math.sin(performance.now()/700 + n.ph);
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.r*tw, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${n.hue},1)`;
+      ctx.shadowColor = `rgba(${n.hue},1)`; ctx.shadowBlur = 16;
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    if (!still) requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* a handful of STEAM emoji drifting slowly upward, barely visible */
+(function sparks(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const icons = ['🤖','💡','⚙️','✨','🔬','🚀','🧪','💻'];
+  icons.forEach((icon, i) => {
+    const el = document.createElement('div');
+    el.className = 'spark'; el.textContent = icon;
+    el.style.left = (5 + i * (86 / (icons.length - 1)) + Math.random()*3) + 'vw';
+    el.style.bottom = '-10vh';
+    el.style.animationDuration = (26 + Math.random()*14) + 's';
+    el.style.animationDelay = (-Math.random()*30) + 's';
+    document.body.appendChild(el);
+  });
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</body>
+</html>
