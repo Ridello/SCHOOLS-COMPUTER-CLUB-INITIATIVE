@@ -212,7 +212,7 @@ tr:last-child td{border-bottom:none;}
                   Flutterwave) integration, server-side, before enabling it.
    ========================================================================= */
 
-const LOGO = "index.html";
+const LOGO = "https://ridello.github.io/Schools-Computer-C-lub-Initiative/images/logo.png";
 const PUBLIC_SITE = "https://ridello.github.io/Schools-Computer-C-lub-Initiative/";
 const SUPABASE_URL = "https://qnasjflifrdllwicrfdg.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_VixtRQE67H9okiiBWwCsNg_FEQzuPAv";
@@ -726,9 +726,9 @@ function publicTopbar(){
   return `
   <div class="pub-topbar">
     <div class="pub-topbar-inner">
-      <a class="pub-logo" href="index.html"><img src="${LOGO}" alt=""> SCCI</a>
+      <a class="pub-logo" href="${PUBLIC_SITE}"><img src="${LOGO}" alt=""> SCCI</a>
       <div class="pub-actions">
-        <a class="back-link" href="${PUBLIC_SITE}">← Public site</a>
+        <a class="back-link" href="index.html">← Public site</a>
         <a class="btn btn-outline btn-sm" href="#/login">Login</a>
         <a class="btn btn-solid btn-sm" href="#/join">Join SCCI</a>
       </div>
@@ -1071,7 +1071,7 @@ function viewDashboard(role, tab, user){
       <div class="side-role">Internal Operations · ${role}</div>
       ${links.map(([id,label])=>`<a class="side-link ${id===valid?'active':''}" href="#/${role}/${id}"><span class="dot"></span>${label}</a>`).join("")}
       <div class="side-foot">
-        <a class="side-link" href="${PUBLIC_SITE}">← Public site</a>
+        <a class="side-link" href="index.html">← Public site</a>
         <button class="side-link" style="width:100%; text-align:left; border:none; background:none;" id="logoutBtn">Log out</button>
       </div>
     </aside>
